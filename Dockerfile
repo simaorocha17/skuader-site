@@ -1,5 +1,6 @@
 # --- build estático do Astro ---
-FROM node:20-alpine AS build
+# Astro 6 exige Node >=22.12 (com node:20 o `npm run build` rebenta)
+FROM node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
