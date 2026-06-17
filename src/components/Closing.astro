@@ -1,0 +1,116 @@
+---
+import Button from './Button.astro';
+import { strings, APP_AUTH_URL } from '../i18n';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const s = strings(lang);
+
+const letters = ['s', 'k', 'u', 'a', 'd', 'e', 'r'];
+---
+
+<section class="section closing" id="start">
+  <div class="container">
+    <span class="eyebrow reveal">{s.closing.eyebrow}</span>
+
+    <p class="wordmark-reprise" aria-label="skuader.">
+      {letters.map((ch) => <span aria-hidden="true">{ch}</span>)}<span
+        class="wm-dot-ink"
+        aria-hidden="true">.</span
+      >
+    </p>
+
+    <div class="closing-cta reveal">
+      <div class="closing-copy">
+        <h2 class="closing-heading">{s.closing.heading}</h2>
+        <p class="closing-support">{s.closing.support}</p>
+      </div>
+      <div class="closing-actions">
+        <Button href={APP_AUTH_URL} variant="primary" label={s.closing.cta} />
+        <span class="closing-meta">{s.closing.meta}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .closing {
+    overflow: hidden;
+  }
+  .wordmark-reprise {
+    font-family: var(--font-display);
+    font-weight: 400;
+    /* Cabe por inteiro (com o ponto), à imagem do hero — nunca corta uma letra. */
+    font-size: clamp(3rem, 15.5vw, 15rem);
+    line-height: 1;
+    letter-spacing: var(--tracking-tight);
+    white-space: nowrap;
+    margin-left: -0.04em;
+    margin-top: var(--space-6);
+    padding-top: var(--display-pad-fix);
+  }
+  .wordmark-reprise span {
+    display: inline-block;
+  }
+  .wm-dot-ink {
+    color: var(--accent-500); /* ponto lima, como no hero (pedido do Ricardo) */
+    /* contorno a tinta no modo claro — lima puro desaparece sobre o papel */
+    -webkit-text-stroke: 1.5px var(--ink-900);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) .wm-dot-ink {
+      -webkit-text-stroke: 0;
+    }
+  }
+  :root[data-theme='dark'] .wm-dot-ink {
+    -webkit-text-stroke: 0;
+  }
+  .closing-cta {
+    margin-top: var(--space-12);
+    max-width: 40ch;
+  }
+  /* desktop: CTA à direita como contrapeso do texto — sem o canto morto */
+  @media (min-width: 860px) {
+    .closing-cta {
+      max-width: none;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: var(--space-8);
+    }
+    .closing-copy {
+      max-width: 40ch;
+    }
+    .closing-actions {
+      margin-top: 0;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--space-3);
+    }
+  }
+  .closing-heading {
+    font-weight: 600;
+    font-size: clamp(1.5rem, 1.1rem + 2vw, 2.25rem);
+    line-height: 1.15;
+    letter-spacing: var(--tracking-tight);
+  }
+  .closing-support {
+    margin-top: var(--space-3);
+    color: var(--muted);
+  }
+  .closing-actions {
+    margin-top: var(--space-6);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+  }
+  .closing-meta {
+    font-size: 0.9375rem;
+    color: var(--muted);
+  }
+</style>

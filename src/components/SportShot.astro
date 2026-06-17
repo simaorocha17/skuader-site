@@ -1,0 +1,52 @@
+---
+// Fotografia de desporto on-brand (gerada, tratamento tinta+lima).
+// O rácio controla-se no pai via --shot-ratio (default 4/5).
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  class?: string;
+  eager?: boolean; // true para fotos acima da dobra (hero)
+}
+const { src, alt, caption, class: cls = '', eager = false } = Astro.props;
+---
+
+<figure class={`sportshot ${cls}`}>
+  <img
+    src={src}
+    alt={alt}
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : 'auto'}
+    decoding="async"
+  />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .sportshot {
+    position: relative;
+    margin: 0;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    aspect-ratio: var(--shot-ratio, 4 / 5);
+    background: var(--sunken);
+  }
+  .sportshot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .sportshot figcaption {
+    position: absolute;
+    left: 14px;
+    bottom: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-tracked);
+    color: var(--paper);
+    text-shadow: 0 1px 8px rgba(5, 7, 11, 0.55);
+  }
+</style>

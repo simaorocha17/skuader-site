@@ -1,0 +1,58 @@
+---
+// Rota de exportação: mostra UM ecrã da app sozinho, plano, a preencher a janela,
+// para capturar como imagem e usar num mockup de iPhone.
+import '../../styles/global.css';
+import ThisWeek from '../../components/screens/ThisWeek.astro';
+import Discovery from '../../components/screens/Discovery.astro';
+import Squad from '../../components/screens/Squad.astro';
+import Profile from '../../components/screens/Profile.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { id: 'thisweek' } },
+    { params: { id: 'discovery' } },
+    { params: { id: 'squad' } },
+    { params: { id: 'profile' } },
+  ];
+}
+const { id } = Astro.params;
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>screen: {id}</title>
+    <style is:global>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #faf8f3;
+      }
+      .export-screen {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .export-screen .app-screen {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="export-screen">
+      {id === 'thisweek' && <ThisWeek />}
+      {id === 'discovery' && <Discovery />}
+      {id === 'squad' && <Squad />}
+      {id === 'profile' && <Profile />}
+    </div>
+  </body>
+</html>

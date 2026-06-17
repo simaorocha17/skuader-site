@@ -1,0 +1,21 @@
+# build output
+dist/
+# generated types / cache
+.astro/
+# dependencies
+node_modules/
+# logs
+npm-debug.log*
+# env
+.env
+.env.production
+# macOS
+.DS_Store
+.vercel
+
+# scripts e capturas de desenvolvimento — não precisos no build do site
+# (alguns capture*.mjs contêm credenciais de teste da app do Miguel)
+capture*.mjs
+bake-statusbar.mjs
+mockup-screens/
+real-app-screens/

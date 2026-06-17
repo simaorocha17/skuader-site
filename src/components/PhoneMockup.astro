@@ -1,0 +1,111 @@
+---
+// Moldura de telemóvel realista (mono): chassis metálico + bezel preto +
+// dynamic island + barra de estado iOS + botões laterais. Os ecrãs da app
+// entram no <slot/>. O 3D (perspetiva/tilt/espessura/sombra) vem de
+// global.css (.band-phone).
+import StatusBar from './StatusBar.astro';
+interface Props {
+  class?: string;
+}
+const { class: cls = '' } = Astro.props;
+---
+
+<div class={`phone ${cls}`}>
+  <!-- botões laterais -->
+  <span class="phone-btn phone-btn--mute" aria-hidden="true"></span>
+  <span class="phone-btn phone-btn--volup" aria-hidden="true"></span>
+  <span class="phone-btn phone-btn--voldn" aria-hidden="true"></span>
+  <span class="phone-btn phone-btn--power" aria-hidden="true"></span>
+
+  <div class="phone-screen">
+    <div class="phone-display">
+      <span class="phone-island" aria-hidden="true"></span>
+      <StatusBar />
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Chassis metálico (--ink-500 = titânio: visível em claro E escuro). */
+  .phone {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    aspect-ratio: 300 / 620;
+    padding: 4px;
+    border-radius: 50px;
+    background: var(--ink-500);
+  }
+  /* Aresta superior mais clara (a moldura a "apanhar luz"). */
+  .phone::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50px;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+    pointer-events: none;
+  }
+
+  /* Bezel preto. */
+  .phone-screen {
+    height: 100%;
+    padding: 5px;
+    border-radius: 46px;
+    background: var(--ink-900);
+  }
+
+  /* Ecrã. */
+  .phone-display {
+    position: relative;
+    height: 100%;
+    border-radius: 42px;
+    overflow: hidden;
+    background: var(--card);
+  }
+
+  /* Dynamic island. */
+  .phone-island {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 33%;
+    height: 22px;
+    border-radius: 99px;
+    background: #05070b;
+    z-index: 6;
+  }
+
+  /* Botões laterais (relevo do chassis). */
+  .phone-btn {
+    position: absolute;
+    background: var(--ink-600);
+    border-radius: 2px;
+    z-index: 1;
+  }
+  .phone-btn--mute {
+    left: -2px;
+    top: 15%;
+    width: 3px;
+    height: 4%;
+  }
+  .phone-btn--volup {
+    left: -2px;
+    top: 23%;
+    width: 3px;
+    height: 7%;
+  }
+  .phone-btn--voldn {
+    left: -2px;
+    top: 32%;
+    width: 3px;
+    height: 7%;
+  }
+  .phone-btn--power {
+    right: -2px;
+    top: 27%;
+    width: 3px;
+    height: 10%;
+  }
+</style>

@@ -1,0 +1,39 @@
+---
+// Composição da página, partilhada pelas duas rotas (/ = pt, /en = en).
+import Base from '../layouts/Base.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import Problem from './Problem.astro';
+import ThisWeekBand from './ThisWeekBand.astro';
+import HowItWorks from './HowItWorks.astro';
+import LiveRoster from './LiveRoster.astro';
+import Sports from './Sports.astro';
+import SquadBand from './SquadBand.astro';
+import StatBand from './StatBand.astro';
+import Proof from './Proof.astro';
+import Closing from './Closing.astro';
+import SiteFooter from './SiteFooter.astro';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+---
+
+<Base lang={lang}>
+  <Header lang={lang} />
+  <Hero lang={lang} />
+  <main>
+    <Problem lang={lang} />
+    <ThisWeekBand lang={lang} />
+    <HowItWorks lang={lang} />
+    <LiveRoster lang={lang} />
+    <Sports lang={lang} />
+    <SquadBand lang={lang} />
+    <StatBand lang={lang} />
+    <Proof lang={lang} />
+    <Closing lang={lang} />
+  </main>
+  <SiteFooter lang={lang} />
+</Base>

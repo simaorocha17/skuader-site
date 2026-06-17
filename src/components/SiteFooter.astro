@@ -1,0 +1,139 @@
+---
+import { strings } from '../i18n';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const s = strings(lang);
+
+const cols = s.footer.cols;
+---
+
+<footer class="site-footer">
+  <div class="container footer-top">
+    <div class="footer-brand">
+      <span class="footer-wordmark">skuader<span class="fw-dot">.</span></span>
+      <p class="footer-tag">{s.footer.tag}</p>
+    </div>
+    <nav class="footer-cols" aria-label={s.footer.aria}>
+      {
+        cols.map((c) => (
+          <div class="footer-col">
+            <span class="footer-col-h">{c.h}</span>
+            <ul>
+              {c.links.map((l) => (
+                <li>
+                  <a href={l.href}>{l.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </nav>
+  </div>
+
+  <div class="container footer-bottom">
+    <span class="footer-copy">© 2026 skuader</span>
+    <span class="footer-credit">
+      {s.footer.creditLead} <a href="https://sketchfab.com/3d-models/iphone-17-pro-4541aa8a28324b33a2baaf81d263aaec" target="_blank" rel="noopener">"iPhone 17 Pro" {s.footer.creditBy} Ranguel (Sketchfab)</a>,
+      <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener license">CC BY 4.0</a> {s.footer.creditResized}
+    </span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding-block: var(--space-16) var(--space-8);
+  }
+  .footer-top {
+    display: grid;
+    gap: var(--space-12);
+  }
+  @media (min-width: 760px) {
+    .footer-top {
+      grid-template-columns: 1.2fr 2fr;
+      gap: var(--space-16);
+    }
+  }
+  .footer-wordmark {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    letter-spacing: var(--tracking-tight);
+  }
+  .footer-tag {
+    margin-top: var(--space-3);
+    color: var(--muted);
+    font-size: 0.9375rem;
+    max-width: 28ch;
+  }
+  .footer-cols {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-8) var(--space-6);
+  }
+  /* desktop: colunas espalhadas até à margem direita */
+  @media (min-width: 760px) {
+    .footer-cols {
+      grid-template-columns: repeat(2, max-content);
+      gap: var(--space-16);
+      justify-content: flex-end;
+    }
+  }
+  .footer-col-h {
+    display: block;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-tracked);
+    color: var(--muted);
+  }
+  .footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-4);
+    display: grid;
+    gap: var(--space-3);
+  }
+  .footer-col a {
+    font-size: 0.9375rem;
+  }
+  .footer-col a:hover {
+    color: var(--muted);
+  }
+  /* alvos de toque no telemóvel: links do footer com altura de dedo */
+  @media (max-width: 720px) {
+    .footer-col ul {
+      gap: var(--space-1);
+    }
+    .footer-col a {
+      display: inline-block;
+      padding-block: 11px;
+    }
+  }
+  .footer-bottom {
+    margin-top: var(--space-16);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  .footer-credit {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .footer-credit a {
+    color: inherit;
+    text-decoration: underline;
+  }
+  .footer-credit a:hover {
+    color: var(--fg);
+  }
+</style>

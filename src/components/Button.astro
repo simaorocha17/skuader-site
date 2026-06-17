@@ -1,0 +1,23 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary';
+  label: string;
+}
+const { href = '#', variant = 'primary', label } = Astro.props;
+---
+
+{
+  variant === 'primary' ? (
+    <a href={href} class="btn btn-primary">
+      {label}
+    </a>
+  ) : (
+    <a href={href} class="btn btn-secondary">
+      <span>{label}</span>
+      <Icon name="arrow-right" size={20} class="btn-arrow" />
+    </a>
+  )
+}

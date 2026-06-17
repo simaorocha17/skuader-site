@@ -1,0 +1,121 @@
+---
+import Icon from './Icon.astro';
+import Phone3D from './Phone3D.astro';
+import { strings } from '../i18n';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const s = strings(lang);
+
+const signalIcons = ['award', 'bar-chart-2', 'map-pin', 'check-circle'];
+const signals = signalIcons.map((icon, i) => ({ icon, label: s.proof.signals[i] }));
+---
+
+<section class="section section--tight proof" id="proof">
+  <div class="container">
+    <div class="proof-grid">
+      <div class="proof-text">
+        <span class="eyebrow reveal">{s.proof.eyebrow}</span>
+        <h2 class="section-heading reveal">{s.proof.heading}</h2>
+        <p class="lead reveal proof-lead">{s.proof.lead}</p>
+        <ul class="signals reveal">
+          {
+            signals.map((s) => (
+              <li class="signal">
+                <Icon name={s.icon} size={20} />
+                <span>{s.label}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <Phone3D class="reveal" screen="/screens/profile.png" label={s.proof.phoneLabel} />
+    </div>
+
+    <div class="quotes">
+      <blockquote class="quote reveal" style="--i:0">
+        <p class="quote-text">“{s.proof.q1}”</p>
+        <cite class="quote-who">{s.proof.q1who}</cite>
+      </blockquote>
+      <blockquote class="quote reveal" style="--i:1">
+        <p class="quote-text">
+          “{s.proof.q2pre}<span class="mark-swipe">{s.proof.q2mark}</span>{s.proof.q2post}”
+        </p>
+        <cite class="quote-who">{s.proof.q2who}</cite>
+      </blockquote>
+      <blockquote class="quote reveal" style="--i:2">
+        <p class="quote-text">“{s.proof.q3}”</p>
+        <cite class="quote-who">{s.proof.q3who}</cite>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<style>
+  .proof-grid {
+    display: grid;
+    gap: var(--space-12);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .proof-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 360px);
+      gap: var(--space-12);
+    }
+  }
+  .proof-lead {
+    margin-top: var(--space-6);
+  }
+  .signals {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-8);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-8);
+  }
+  .signal {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.9375rem;
+  }
+  .signal :global(.icon) {
+    color: var(--muted);
+  }
+  .proof-phone {
+    justify-self: center;
+  }
+  .quotes {
+    margin-top: 40px; /* --space-10 não existe nos tokens */
+    display: grid;
+    gap: var(--space-8);
+  }
+  @media (min-width: 820px) {
+    .quotes {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .quote {
+    margin: 0;
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-4);
+  }
+  .quote-text {
+    font-weight: 600;
+    font-size: 1.0625rem;
+    line-height: 1.45;
+  }
+  .quote-who {
+    display: block;
+    margin-top: var(--space-3);
+    font-style: normal;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+</style>

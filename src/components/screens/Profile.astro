@@ -1,0 +1,99 @@
+---
+import Icon from '../Icon.astro';
+
+const sessions = [
+  { sport: 'Padel', place: 'Clube Norte', date: '2d' },
+  { sport: 'Football', place: 'Parque Central', date: '5d' },
+  { sport: 'Running', place: 'Riverside loop', date: '1w' },
+];
+---
+
+<div class="app-screen pf">
+  <div class="pf-head">
+    <span class="app-avatar pf-av">MJ</span>
+    <div>
+      <div class="app-title pf-name">Marta J.</div>
+      <span class="pf-handle">@marta · padel</span>
+    </div>
+  </div>
+
+  <div class="pf-tags">
+    <span class="app-pill app-pill--muted">Padel</span>
+    <span class="app-pill app-pill--muted">Tennis</span>
+    <span class="app-pill app-pill--muted">Running</span>
+  </div>
+
+  <div class="pf-ring-wrap">
+    <svg class="pf-ring" viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border)" stroke-width="9"></circle>
+      <circle
+        class="ring-arc"
+        cx="60"
+        cy="60"
+        r="52"
+        fill="none"
+        stroke="var(--accent-500)"
+        stroke-width="9"
+        stroke-linecap="round"
+        pathLength="100"
+        stroke-dasharray="100"
+        stroke-dashoffset="4"
+        transform="rotate(-90 60 60)"></circle>
+    </svg>
+    <div class="pf-ring-num">
+      <span class="countup">96</span><span class="pf-pct">%</span>
+      <span class="pf-lbl">Reliability</span>
+    </div>
+  </div>
+
+  <div class="pf-stats">
+    <div><strong class="countup">128</strong><span>Games</span></div>
+    <div><strong class="countup">4</strong><span>Sports</span></div>
+    <div><strong class="countup">18</strong><span>Squads</span></div>
+  </div>
+
+  <span class="app-eyebrow pf-recent-h">Recent</span>
+  <div class="pf-recent">
+    {
+      sessions.map((s) => (
+        <div class="pf-sess">
+          <span class="pf-sess-name">{s.sport} · {s.place}</span>
+          <span class="pf-date">{s.date}</span>
+          <Icon name="check-circle" size={15} />
+        </div>
+      ))
+    }
+  </div>
+
+  <nav class="app-tabbar">
+    <Icon name="calendar" size={19} />
+    <Icon name="users" size={19} />
+    <Icon name="compass" size={19} />
+    <span class="tab-active"><Icon name="user" size={19} /></span>
+  </nav>
+</div>
+
+<style>
+  .pf-head { display: flex; align-items: center; gap: 10px; }
+  .pf-av { width: 42px; height: 42px; font-size: 14px; }
+  .pf-name { font-size: 18px; }
+  .pf-handle { font-size: 12px; color: var(--muted); }
+  .pf-tags { display: flex; gap: 6px; }
+  .pf-ring-wrap { position: relative; width: 124px; height: 124px; margin: 4px auto 0; }
+  .pf-ring { width: 100%; height: 100%; }
+  .pf-ring-num { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .pf-ring-num .countup { font-weight: 600; font-size: 32px; line-height: 1; }
+  .pf-pct { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .pf-lbl { margin-top: 3px; font-size: 9px; text-transform: uppercase; letter-spacing: var(--tracking-tracked); color: var(--muted); }
+  .pf-stats { display: flex; border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; }
+  .pf-stats div { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 9px 4px; }
+  .pf-stats div:not(:last-child) { border-right: 1px solid var(--border); }
+  .pf-stats strong { font-weight: 600; font-size: 17px; }
+  .pf-stats span { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: var(--tracking-tracked); }
+  .pf-recent-h { margin-top: 2px; }
+  .pf-recent { display: grid; gap: 7px; }
+  .pf-sess { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .pf-sess-name { flex: 1; font-weight: 600; }
+  .pf-date { color: var(--muted); font-size: 11px; }
+  .pf-sess :global(.icon) { color: var(--muted); }
+</style>

@@ -1,0 +1,125 @@
+---
+// Página legal (Privacidade / Termos), PT e EN. Conteúdo é um RASCUNHO honesto
+// — rever antes de divulgação a sério. Sem cabeçalho/rodapé do site; só o
+// conteúdo + link de regresso. Deteção de idioma desligada (não reencaminha).
+import Base from '../layouts/Base.astro';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  doc: 'privacy' | 'terms';
+}
+const { lang, doc } = Astro.props;
+const home = lang === 'en' ? '/en' : '/';
+const back = lang === 'en' ? 'Back to skuader' : 'Voltar ao skuader';
+
+const DOCS = {
+  pt: {
+    privacy: {
+      title: 'Política de Privacidade',
+      updated: 'Última atualização: 16 de junho de 2026',
+      sections: [
+        { h: 'Este site', p: 'Esta página apresenta a aplicação skuader. A app é um produto separado e tem a sua própria política de privacidade.' },
+        { h: 'Dados que recolhemos', p: 'Este site é estático e não recolhe dados pessoais: não tem formulários, não cria conta e não usa cookies de rastreio nem ferramentas de analítica.' },
+        { h: 'Preferência de idioma', p: 'Guardamos a tua escolha de idioma (PT/EN) no teu navegador, através de armazenamento local. Fica apenas no teu dispositivo e podes removê-la limpando os dados do site.' },
+        { h: 'Ligações externas', p: 'O site liga a sites de terceiros (por exemplo, Sketchfab e Creative Commons, no crédito do modelo 3D). Esses sites têm as suas próprias políticas, pelas quais não somos responsáveis.' },
+        { h: 'Alterações', p: 'Podemos atualizar esta política. A data acima indica a última revisão.' },
+      ],
+    },
+    terms: {
+      title: 'Termos de Utilização',
+      updated: 'Última atualização: 16 de junho de 2026',
+      sections: [
+        { h: 'Objeto', p: 'Estes termos aplicam-se a este site de apresentação da app skuader. A utilização da app rege-se por termos próprios.' },
+        { h: 'Propriedade', p: 'A marca, os textos e as imagens deste site pertencem aos respetivos titulares. O modelo 3D do iPhone é da autoria de Ranguel, utilizado sob a licença Creative Commons BY 4.0.' },
+        { h: 'Conteúdo ilustrativo', p: 'Os números, exemplos e testemunhos apresentados no site servem apenas para demonstração e não representam dados reais.' },
+        { h: 'Sem garantias', p: 'O site é disponibilizado "tal como está", sem garantias de qualquer tipo quanto a disponibilidade ou exatidão.' },
+        { h: 'Lei aplicável', p: 'Estes termos regem-se pela lei portuguesa. Podemos atualizá-los a qualquer momento.' },
+      ],
+    },
+  },
+  en: {
+    privacy: {
+      title: 'Privacy Policy',
+      updated: 'Last updated: 16 June 2026',
+      sections: [
+        { h: 'This site', p: 'This page presents the skuader app. The app is a separate product with its own privacy policy.' },
+        { h: 'Data we collect', p: 'This site is static and collects no personal data: it has no forms, no accounts, and uses no tracking cookies or analytics tools.' },
+        { h: 'Language preference', p: 'We store your language choice (PT/EN) in your browser via local storage. It stays only on your device, and you can remove it by clearing the site data.' },
+        { h: 'External links', p: 'The site links to third-party sites (for example Sketchfab and Creative Commons, in the 3D model credit). Those sites have their own policies, for which we are not responsible.' },
+        { h: 'Changes', p: 'We may update this policy. The date above shows the last revision.' },
+      ],
+    },
+    terms: {
+      title: 'Terms of Use',
+      updated: 'Last updated: 16 June 2026',
+      sections: [
+        { h: 'Scope', p: 'These terms apply to this presentation site for the skuader app. Use of the app is governed by its own terms.' },
+        { h: 'Ownership', p: 'The brand, text and images on this site belong to their respective owners. The 3D iPhone model is by Ranguel, used under the Creative Commons BY 4.0 licence.' },
+        { h: 'Illustrative content', p: 'The figures, examples and testimonials shown on the site are for demonstration only and do not represent real data.' },
+        { h: 'No warranty', p: 'The site is provided "as is", without warranties of any kind as to availability or accuracy.' },
+        { h: 'Governing law', p: 'These terms are governed by Portuguese law. We may update them at any time.' },
+      ],
+    },
+  },
+};
+
+const d = DOCS[lang][doc];
+---
+
+<Base lang={lang} autoDetect={false} title={`${d.title} — skuader`} description={d.title}>
+  <main class="legal container">
+    <a class="legal-back" href={home}>← {back}</a>
+    <h1 class="legal-h1">{d.title}</h1>
+    <p class="legal-updated">{d.updated}</p>
+    {
+      d.sections.map((sec) => (
+        <section class="legal-sec">
+          <h2>{sec.h}</h2>
+          <p>{sec.p}</p>
+        </section>
+      ))
+    }
+  </main>
+</Base>
+
+<style>
+  .legal {
+    max-width: 720px;
+    padding-block: clamp(72px, 12vh, 132px);
+  }
+  .legal-back {
+    display: inline-block;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: var(--space-12);
+  }
+  .legal-back:hover {
+    color: var(--fg);
+  }
+  .legal-h1 {
+    font-family: var(--font-text);
+    font-weight: 600;
+    font-size: clamp(1.875rem, 1.2rem + 2.5vw, 2.75rem);
+    line-height: 1.1;
+    letter-spacing: var(--tracking-tight);
+  }
+  .legal-updated {
+    margin-top: var(--space-3);
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  .legal-sec {
+    margin-top: var(--space-8);
+  }
+  .legal-sec h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+  }
+  .legal-sec p {
+    color: var(--muted);
+    line-height: 1.65;
+  }
+</style>

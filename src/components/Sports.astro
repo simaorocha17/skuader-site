@@ -1,0 +1,153 @@
+---
+import SportShot from './SportShot.astro';
+import { strings } from '../i18n';
+import type { Lang } from '../i18n';
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const s = strings(lang);
+
+const sports = s.sports.list;
+const reversed = [...sports].reverse();
+---
+
+<section class="section section--tight sports" id="sports">
+  <div class="container">
+    <span class="eyebrow reveal">{s.sports.eyebrow}</span>
+    <h2 class="section-heading reveal">{s.sports.heading}</h2>
+  </div>
+
+  <p class="sr-only">{s.sports.srPrefix}{sports.join(', ')}{s.sports.srSuffix}</p>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="mq-row">
+      <div class="mq-track mq-left">
+        {
+          [0, 1].map(() => (
+            <>
+              <span class="app-pill mq-live">{s.sports.live}</span>
+              {sports.map((s) => (
+                <>
+                  <span class="mq-word">{s}</span>
+                  <span class="mq-dot">·</span>
+                </>
+              ))}
+            </>
+          ))
+        }
+      </div>
+    </div>
+    <div class="mq-row">
+      <div class="mq-track mq-right">
+        {
+          [0, 1].map(() => (
+            <>
+              {reversed.map((s) => (
+                <>
+                  <span class="mq-word">{s}</span>
+                  <span class="mq-dot">·</span>
+                </>
+              ))}
+            </>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sport-shots">
+      <SportShot
+        class="reveal"
+        src={s.sports.shots[0].src}
+        alt={s.sports.shots[0].alt}
+        caption={s.sports.shots[0].caption}
+      />
+      <SportShot
+        class="reveal"
+        src={s.sports.shots[1].src}
+        alt={s.sports.shots[1].alt}
+        caption={s.sports.shots[1].caption}
+      />
+      <SportShot
+        class="reveal"
+        src={s.sports.shots[2].src}
+        alt={s.sports.shots[2].alt}
+        caption={s.sports.shots[2].caption}
+      />
+    </div>
+    <p class="sport-more reveal accent-text">{s.sports.more}</p>
+  </div>
+</section>
+
+<style>
+  /* a nota final fica a ~160px do fim da secção sem isto */
+  .sports {
+    padding-bottom: clamp(40px, 5vh, 64px);
+  }
+  .sport-shots {
+    /* padding e não margin: margin colapsava através do .container com o
+       margin-bottom do marquee e os 48px eram engolidos */
+    padding-top: var(--space-12);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+  @media (max-width: 720px) {
+    .sport-shots {
+      grid-template-columns: 1fr;
+      --shot-ratio: 16 / 10; /* ao alto seria um pergaminho no mobile */
+    }
+  }
+  .sport-more {
+    margin-top: var(--space-6);
+  }
+  .marquee {
+    margin-block: var(--space-16);
+    display: grid;
+    gap: 14px;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+  .mq-row {
+    overflow: hidden;
+  }
+  .mq-track {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    width: max-content;
+    font-weight: 600;
+    font-size: clamp(1.5rem, 1rem + 3.4vw, 3rem);
+    line-height: 1.2;
+    letter-spacing: var(--tracking-tight);
+    will-change: transform;
+  }
+  .mq-left { animation: mq-l 42s linear infinite; }
+  .mq-right { animation: mq-r 42s linear infinite; }
+  @keyframes mq-l {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes mq-r {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
+  }
+  .mq-word { color: var(--fg); white-space: nowrap; }
+  .mq-dot { color: var(--muted); }
+  .mq-live {
+    background: var(--accent-500);
+    color: var(--ink-900);
+    font-size: 0.42em;
+    padding: 6px 12px;
+    border-radius: var(--r-full);
+    letter-spacing: var(--tracking-tracked);
+    text-transform: uppercase;
+  }
+  @media (hover: hover) {
+    .marquee:hover .mq-track { animation-play-state: paused; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mq-track { animation: none; }
+    .marquee .mq-row:last-child { display: none; }
+  }
+</style>

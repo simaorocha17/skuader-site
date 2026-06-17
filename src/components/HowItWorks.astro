@@ -1,0 +1,81 @@
+---
+import { strings } from '../i18n';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const s = strings(lang);
+
+const steps = s.how.steps;
+---
+
+<section class="section section--tight how" id="how-it-works">
+  <div class="container">
+    <span class="eyebrow reveal">{s.how.eyebrow}</span>
+    <h2 class="section-heading reveal">{s.how.heading}</h2>
+
+    <ol class="steps">
+      {
+        steps.map((s, i) => (
+          <li class="step reveal" style={`--i:${i}`}>
+            <span class="step-n">
+              {s.n}
+              <span class="underscore" aria-hidden="true" />
+            </span>
+            <h3 class="step-t">{s.t}</h3>
+            <p class="step-d">{s.d}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .steps {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-12);
+    display: grid;
+    gap: var(--space-8);
+  }
+  @media (min-width: 820px) {
+    .steps {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .step {
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-4);
+  }
+  .step-n {
+    position: relative;
+    display: inline-block;
+    font-weight: 600;
+    font-size: clamp(2.5rem, 2rem + 3vw, 4rem);
+    line-height: 1;
+    letter-spacing: var(--tracking-tight);
+  }
+  .underscore {
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 100%;
+    height: 3px;
+    background: var(--accent-500);
+  }
+  .step-t {
+    margin-top: var(--space-4);
+    font-weight: 600;
+    font-size: 1.25rem;
+  }
+  .step-d {
+    margin-top: var(--space-2);
+    color: var(--muted);
+    line-height: 1.55;
+    max-width: 34ch;
+  }
+</style>

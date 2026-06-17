@@ -1,0 +1,282 @@
+---
+// iPhone 3D real (Three.js): carrega o modelo .glb, mete a print da app no
+// ecrã (material "OLED"), ilumina com env-map, e anima (roda com o scroll + flutua).
+// Modelo: "iPhone 17 Pro" de Ranguel (Sketchfab), CC BY 4.0 — crédito no rodapé.
+// https://sketchfab.com/3d-models/iphone-17-pro-4541aa8a28324b33a2baaf81d263aaec
+interface Props {
+  screen?: string;
+  model?: string;
+  class?: string;
+  label?: string;
+  dir?: number; // 1 = roda para a direita com o scroll, -1 = espelhado
+}
+const {
+  screen = '/screens/thisweek.png',
+  model = '/models/iphone.glb',
+  class: cls = '',
+  label = 'A app skuader num iPhone 3D',
+  dir = 1,
+} = Astro.props;
+---
+
+<div
+  class={`phone3d ${cls}`}
+  data-model={model}
+  data-screen={screen}
+  data-dir={dir}
+  role="img"
+  aria-label={label}
+>
+  <div class="phone3d-fallback" style={`background-image:url(${screen})`} aria-hidden="true"></div>
+</div>
+
+<script>
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+  import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function initPhone3D(el: HTMLElement, idx: number) {
+    const dir = Number(el.dataset.dir || 1);
+    const phase = idx * 1.3; // cada telemóvel flutua com fase própria
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } catch (e) {
+      el.classList.add('phone3d--fallback'); // sem WebGL → mostra a print plana
+      return;
+    }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    // exposição baixa: o corpo branco do modelo estoura facilmente sobre
+    // fundos escuros (o ecrã não é afectado — é toneMapped:false)
+    renderer.toneMappingExposure = 0.82;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    const canvas = renderer.domElement;
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.display = 'block';
+    el.appendChild(canvas);
+    el.classList.add('phone3d--live');
+
+    const scene = new THREE.Scene();
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = envTex;
+    // ÚNICO knob que controla o brilho do corpo: com scene.environment, o
+    // three r184 ignora envMapIntensity dos materiais e luzes não-IBL têm
+    // efeito ~nulo aqui (medido: luzes a 0 → render igual). NÃO subir o blur
+    // do PMREM para suavizar reflexos — espalha a luz e clareia (testado);
+    // a suavidade vem do roughness floor nos materiais do corpo.
+    scene.environmentIntensity = 0.45;
+
+    const camera = new THREE.PerspectiveCamera(26, 1, 0.1, 100);
+    camera.position.set(0, 0, 15);
+
+    const group = new THREE.Group();
+    scene.add(group);
+
+    // textura do ecrã (a print real da app)
+    const screenTex = new THREE.TextureLoader().load(el.dataset.screen!, () => render());
+    screenTex.colorSpace = THREE.SRGBColorSpace;
+    screenTex.flipY = false; // convenção glTF
+    // os UVs do ecrã deste GLB estão espelhados no eixo U → desfaz o espelho
+    screenTex.wrapS = THREE.RepeatWrapping;
+    screenTex.repeat.x = -1;
+    screenTex.offset.x = 1;
+    screenTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+    let phone: THREE.Object3D | null = null;
+    let loaded = false;
+    const tinted = new Set<string>(); // materiais podem ser partilhados — tinge só 1×
+
+    new GLTFLoader().load(
+      el.dataset.model!,
+      (gltf) => {
+        phone = gltf.scene;
+        phone.traverse((o: any) => {
+          if (!o.isMesh || !o.material) return;
+          const mats = Array.isArray(o.material) ? o.material : [o.material];
+          // camada de vidro preto (alpha 0.78) por cima do OLED: escurece o
+          // ecrã e reflecte um lençol branco — desliga-a por completo
+          if (mats.some((m: any) => m.name === 'Glass')) {
+            o.visible = false;
+            return;
+          }
+          const swapped = mats.map((m: any) => {
+            // MeshBasic ignora luzes/env-map: o ecrã mostra a print tal e
+            // qual, sem o véu especular que o MeshStandard sempre adiciona.
+            // side: BackSide — o mesh do ecrã tem winding invertido, por isso
+            // as faces visíveis de FRENTE são as "back". BackSide rende-as ao
+            // centro (igual ao DoubleSide) MAS some ao virar para trás (180°),
+            // revelando o corpo de titânio — volta de 360° a sério.
+            if (m.name === 'OLED') {
+              const screen = new THREE.MeshBasicMaterial({ map: screenTex, toneMapped: false, side: THREE.BackSide });
+              screen.name = 'OLED';
+              return screen;
+            }
+            // dynamic island: preta como num iPhone real, não lavada pelas luzes
+            if (m.name === 'OLED off') {
+              const off = new THREE.MeshBasicMaterial({ color: 0x0a0a0c, toneMapped: false, side: THREE.BackSide });
+              off.name = 'OLED off';
+              return off;
+            }
+            // corpo escuro grafite. Só a TRASEIRA (módulo de câmaras/vidro)
+            // leva brilho — dá vida ao telemóvel quando roda. A FRENTE + o
+            // frame ficam 100% MATE (sem reflexos), como o Ricardo pediu.
+            if (m.color && !tinted.has(m.uuid)) {
+              tinted.add(m.uuid);
+              const back = /^(Camera|Glass tint)/.test(m.name || '');
+              if (back) {
+                // câmaras/vidro: espelhadas, com envMap PRÓPRIO (o r184 só
+                // respeita envMapIntensity com envMap próprio) → lentes
+                // reflexivas/vivas, sem precisar de luz forte na frente.
+                if ('metalness' in m) m.metalness = 0.9;
+                if ('roughness' in m) m.roughness = 0.1;
+                m.envMap = envTex;
+                m.envMapIntensity = 2.6;
+              } else {
+                // corpo (chassis inteiro): titânio grafite ACETINADO realista —
+                // metálico com reflexo SUAVE (sem o brilho duro/artificial de
+                // antes), para parecer um telemóvel a sério e não um bloco
+                // cinzento mate "falso".
+                m.color.multiplyScalar(0.5);
+                if ('metalness' in m) m.metalness = 0.7;
+                if ('roughness' in m) m.roughness = 0.6;
+              }
+              m.needsUpdate = true;
+            }
+            return m;
+          });
+          o.material = Array.isArray(o.material) ? swapped : swapped[0];
+        });
+        // o GLB tem o ecrã virado para -Z: roda 180° para ficar de frente à câmara
+        phone.rotation.y = Math.PI;
+        // escala para caber na vista da câmara (fov 26° a z=15 vê ~6,9 un de altura)
+        const pre = new THREE.Box3().setFromObject(phone);
+        const size = pre.getSize(new THREE.Vector3());
+        phone.scale.setScalar(5.9 / size.y);
+        // centra DEPOIS de rodar+escalar, senão o offset fica errado
+        const box = new THREE.Box3().setFromObject(phone);
+        const center = box.getCenter(new THREE.Vector3());
+        phone.position.sub(center);
+        group.add(phone);
+        loaded = true;
+        if (reduce) group.rotation.set(-0.04, -0.22 * dir, 0);
+        resize();
+        render();
+      },
+      undefined,
+      () => el.classList.add('phone3d--fallback')
+    );
+
+    function resize() {
+      const w = el.clientWidth || 1;
+      const h = el.clientHeight || 1;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    function render() {
+      renderer.render(scene, camera);
+    }
+
+    let running = false;
+    let lastNow = performance.now();
+    let tAccum = phase;
+
+    // tilt subtil a seguir o cursor (só desktop com rato; nunca com reduce)
+    let tiltX = 0, tiltY = 0, curX = 0, curY = 0;
+    if (!reduce && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      window.addEventListener('pointermove', (e) => {
+        const r = el.getBoundingClientRect();
+        tiltY = THREE.MathUtils.clamp((e.clientX - r.left - r.width / 2) / window.innerWidth, -0.5, 0.5);
+        tiltX = THREE.MathUtils.clamp((e.clientY - r.top - r.height / 2) / window.innerHeight, -0.5, 0.5);
+      }, { passive: true });
+    }
+
+    // ROTAÇÃO PRESA AO SCROLL: a volta de 360° está agarrada à posição do
+    // telemóvel no ecrã — sp=0 quando o topo entra por baixo, sp=1 quando
+    // está centrado. (1-sp)*360° → fecha em 0° (ecrã de FRENTE) ao centrar.
+    // Depende da posição, não do tempo: a velocidade da volta = a do scroll.
+    // FINISH_FRAC: fica de FRENTE quando o centro do telemóvel chega a esta
+    // fração do ecrã (0.68 = um pouco ABAIXO do centro → fecha a volta mais
+    // cedo, antes de estar perfeitamente centrado). Daí para cima mantém-se.
+    const FINISH_FRAC = 0.68;
+    function scrollSpin() {
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const denom = vh - vh * FINISH_FRAC + r.height / 2; // entrada → chegada
+      const sp = THREE.MathUtils.clamp((vh - r.top) / denom, 0, 1);
+      return (1 - sp) * Math.PI * 2 * dir;
+    }
+
+    function frame() {
+      if (!running) return;
+      const now = performance.now();
+      const dt = Math.min((now - lastNow) / 1000, 0.1); // clamp: tab em background
+      lastNow = now;
+      tAccum += dt;
+      if (loaded && phone) {
+        curX += (tiltX - curX) * 0.06;
+        curY += (tiltY - curY) * 0.06;
+        group.rotation.y = scrollSpin() + curY * 0.22;
+        group.rotation.x = -0.04 + curX * 0.12;
+        group.position.y = Math.sin(tAccum * 0.9) * 0.16; // flutua (vida); não vira o ecrã
+      }
+      render();
+      requestAnimationFrame(frame);
+    }
+
+    window.addEventListener('resize', () => { resize(); render(); }, { passive: true });
+
+    const io = new IntersectionObserver(
+      (ents) => {
+        for (const e of ents) {
+          if (e.isIntersecting && !reduce) {
+            if (!running) { running = true; lastNow = performance.now(); frame(); }
+          } else {
+            running = false;
+          }
+        }
+      },
+      { threshold: 0.01 }
+    );
+    io.observe(el);
+  }
+
+  document.querySelectorAll<HTMLElement>('.phone3d').forEach((el, i) => initPhone3D(el, i));
+</script>
+
+<style>
+  .phone3d {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 26 / 42;
+    margin-inline: auto;
+    justify-self: center;
+  }
+  .phone3d :global(canvas) {
+    width: 100%;
+    height: 100%;
+  }
+  /* Fallback: enquanto carrega ou se não houver WebGL, mostra a print plana. */
+  .phone3d-fallback {
+    position: absolute;
+    inset: 8%;
+    border-radius: 36px;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid var(--border);
+    opacity: 1;
+    transition: opacity 0.4s ease;
+  }
+  .phone3d--live .phone3d-fallback {
+    opacity: 0;
+  }
+  .phone3d--fallback .phone3d-fallback {
+    opacity: 1;
+  }
+</style>

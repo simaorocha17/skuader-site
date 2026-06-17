@@ -1,0 +1,10 @@
+node_modules
+dist
+.astro
+.vercel
+.git
+real-app-screens
+capture6.mjs
+bake-statusbar.mjs
+*.log
+.DS_Store

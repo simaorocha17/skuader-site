@@ -1,0 +1,96 @@
+/* skuader — design tokens. Fonte de verdade: squad-brand-handoff.md */
+:root {
+  /* ===== Ink — escala neutra escura (leve azul, hue ~250) ===== */
+  --ink-50: #F6F7F8;
+  --ink-100: #ECEEF1;
+  --ink-200: #D6DAE1;
+  --ink-300: #B2BAC6;
+  --ink-400: #8791A2;
+  --ink-500: #5E6A7D;
+  --ink-600: #414C5E;
+  --ink-700: #2D3648;
+  --ink-800: #1B2130;
+  --ink-900: #0E131C;
+
+  /* ===== Paper — off-white quente (hue ~90) ===== */
+  --paper: #FAF8F3;
+  --paper-raised: #FFFFFF;
+  --paper-sunken: #F3F0E8;
+
+  /* ===== Accent — lima/chartreuse. ÚNICA cor de marca. Máx 2–3 usos por viewport. ===== */
+  --accent-300: #E5FF9B;
+  --accent-400: #DBFF75;
+  --accent-500: #CFFF4B; /* PRIMARY brand */
+  --accent-600: #B3E620;
+  --accent-700: #90BD16;
+
+  /* ===== Semânticas ===== */
+  --confirmed: #4A7C59;
+  --declined: #B93535;
+  --pending: #8A8F99;
+  --warning: #E58E16;
+
+  /* ===== Tipografia (só duas faces — nunca uma terceira) ===== */
+  --font-display: 'Boldonse', system-ui, sans-serif; /* só peso 400; já é pesada/condensada */
+  --font-text: 'Inter', system-ui, -apple-system, sans-serif;
+  /* Gotcha Boldonse: corta os ascenders se a caixa for apertada → padding-top ~18% do font-size */
+  --display-pad-fix: 0.18em;
+  --tracking-tight: -0.3px;
+  --tracking-tracked: 0.8px; /* labels MAIÚSCULAS, ex.: "START A SQUAD" */
+
+  /* ===== Forma & espaço (grelha base-4) ===== */
+  --r-sm: 6px;
+  --r-md: 12px;  /* botões */
+  --r-lg: 16px;  /* cards */
+  --r-xl: 24px;  /* sheets */
+  --r-full: 9999px; /* pills */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ===== Tokens compostos — LIGHT (default) ===== */
+  --bg: var(--paper);
+  --fg: var(--ink-900);
+  --card: var(--paper);
+  --sunken: var(--paper-sunken);
+  --border: rgba(14, 19, 28, 0.08);
+  --accent: var(--accent-500);
+  --muted: var(--ink-500);
+  color-scheme: light;
+}
+
+/* ===== DARK — segue o sistema ===== */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: var(--ink-900);
+    --fg: var(--paper);
+    --card: #141923;
+    --sunken: var(--ink-800);
+    --border: rgba(250, 248, 243, 0.08);
+    --confirmed: #2DBE7C;
+    --declined: #DC5151;
+    --muted: var(--ink-300);
+    color-scheme: dark;
+  }
+}
+
+/* ===== Override manual (toggle opcional) ===== */
+:root[data-theme="dark"] {
+  --bg: var(--ink-900);
+  --fg: var(--paper);
+  --card: #141923;
+  --sunken: var(--ink-800);
+  --border: rgba(250, 248, 243, 0.08);
+  --confirmed: #2DBE7C;
+  --declined: #DC5151;
+  --muted: var(--ink-300);
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}

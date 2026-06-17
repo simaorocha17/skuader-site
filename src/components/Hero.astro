@@ -1,0 +1,320 @@
+---
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+import { strings, APP_AUTH_URL } from '../i18n';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const s = strings(lang);
+
+// "skuader." dividido em letras para a animação de "set" (type a assentar no papel).
+const letters = ['s', 'k', 'u', 'a', 'd', 'e', 'r'];
+---
+
+<section class="hero" id="top">
+  <div class="hero-bg" aria-hidden="true">
+    <img
+      src="/photos/hero-squad.webp"
+      alt=""
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+    />
+  </div>
+  <div class="hero-inner container">
+    <h1 class="wordmark" data-parallax aria-label="skuader.">
+      {
+        letters.map((ch, i) => (
+          <span class="wm-letter" style={`--i:${i}`} aria-hidden="true">
+            {ch}
+          </span>
+        ))
+      }
+      <span class="wm-dot" aria-hidden="true">.</span>
+    </h1>
+
+    <div class="hero-cta-row">
+      <p class="hero-promise">{s.hero.promise}</p>
+      <div class="hero-actions">
+        <Button href={APP_AUTH_URL} variant="primary" label={s.hero.ctaPrimary} />
+        <Button href="#how-it-works" variant="secondary" label={s.hero.ctaSecondary} />
+      </div>
+    </div>
+  </div>
+  <span class="hero-scroll" aria-hidden="true"><Icon name="chevron-down" size={22} /></span>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 88svh;
+    display: flex;
+    align-items: stretch;
+    padding-block: clamp(24px, 6vh, 64px);
+    /* a foto de fundo é escura nos 2 modos → texto sempre claro aqui */
+    color: var(--paper);
+  }
+
+  /* fundo fotográfico: a equipa, com véu de tinta para o texto ler */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    animation: hero-bg-in 1.6s var(--ease) both;
+  }
+  .hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 32%;
+  }
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(14, 19, 28, 0.78) 0%,
+      rgba(14, 19, 28, 0.6) 45%,
+      rgba(14, 19, 28, 0.86) 100%
+    );
+  }
+  @keyframes hero-bg-in {
+    from {
+      opacity: 0;
+      transform: scale(1.05);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  .hero-inner {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  /* Um só espaçador em cima: empurra TUDO (linha frase+botões e wordmark)
+     para o fundo do hero. */
+  .hero-inner::before {
+    content: '';
+    flex: 1;
+  }
+
+  /* Wordmark gigante — Boldonse, nunca quebra de linha. FULL-BLEED:
+     escapa ao container e enche o viewport com ~10px de margem por lado
+     (o divisor 5.2 é o rácio largura-do-texto/font-size da Boldonse). */
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 400;
+    /* divisor 5.13 = rácio medido largura-do-texto/font-size. Subtrai 10vw
+       (=5vw de margem por lado) para o logo NÃO encostar às bordas — fica
+       centrado com folga, à custa de um pouco menos de tamanho. */
+    font-size: max(3rem, calc((100vw - 10vw) / 5.13));
+    line-height: 0.92;
+    letter-spacing: var(--tracking-tight);
+    white-space: nowrap;
+    text-align: center; /* reparte a folga pelos dois lados → centrado */
+    align-self: center;
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    padding-inline: 3px;
+    box-sizing: border-box;
+    padding-top: var(--display-pad-fix);
+    margin-bottom: 0; /* os botões seguem-se logo abaixo do logotipo */
+  }
+  .wm-letter,
+  .wm-dot {
+    display: inline-block;
+  }
+  .wm-dot {
+    /* sobre a foto escura o lima brilha sozinho — sem contorno em nenhum modo */
+    color: var(--accent-500);
+    margin-left: -0.2em; /* encosta a bolinha ao "r" */
+  }
+
+  /* linha ABAIXO do logotipo: frase à esquerda, botões à direita,
+     full-bleed quase rente às bordas; afastada do logotipo */
+  .hero-cta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+    margin-top: clamp(28px, 4vh, 52px);
+    /* dentro do container (não full-bleed): afastado das margens e
+       alinhado com os cabeçalhos das secções abaixo */
+  }
+  .hero-promise {
+    max-width: 52ch;
+  }
+  .hero-actions :global(.btn-secondary) {
+    color: var(--paper);
+  }
+  /* título no estilo do eyebrow — pequeno e discreto, sempre claro */
+  .hero-promise {
+    font-weight: 600;
+    font-size: clamp(0.6875rem, 0.64rem + 0.15vw, 0.75rem);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-tracked);
+    line-height: 1.4;
+    color: rgba(250, 248, 243, 0.9);
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 700px) {
+    .hero-cta-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-6);
+    }
+  }
+
+  /* ===== Entrada do site: coreografia do hero =====
+     Cronologia: eyebrow (0ms) → letras sobem com peso (120ms+, stagger 65ms)
+     → ponto lima CAI e aterra com squash (~700ms) → promise/support/CTAs em
+     cascata (820ms+) → chevron por último (1350ms). CSS puro, zero JS. */
+
+  /* letras: sobem do "chão" e assentam (carimbo tipográfico) */
+  @keyframes wm-rise {
+    from {
+      opacity: 0;
+      transform: translateY(0.55em) scaleY(1.12);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scaleY(1);
+    }
+  }
+  .wm-letter {
+    opacity: 0;
+    transform-origin: center bottom;
+    animation: wm-rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(60ms + var(--i) * 65ms);
+  }
+
+  /* o ponto lima: cai de cima (gravidade), aterra, squash e repouso */
+  @keyframes wm-dot-drop {
+    0% {
+      opacity: 0;
+      transform: translateY(-2.2em) scale(1);
+      animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+    }
+    12% {
+      opacity: 1;
+    }
+    55% {
+      transform: translateY(0) scale(1);
+      animation-timing-function: ease-out;
+    }
+    70% {
+      transform: translateY(0) scaleX(1.22) scaleY(0.72);
+      animation-timing-function: ease-in-out;
+    }
+    85% {
+      transform: translateY(0) scaleX(0.97) scaleY(1.05);
+      animation-timing-function: ease-out;
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .wm-dot {
+    opacity: 0;
+    transform-origin: center bottom;
+    animation: wm-dot-drop 0.65s linear both;
+    animation-delay: 700ms;
+  }
+
+  /* resto do hero: cascata fade+rise */
+  @keyframes hero-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .hero-promise {
+    animation: hero-in 0.6s var(--ease) 0.75s both;
+  }
+  /* botões do hero: bem maiores (pedido do Ricardo: "2x mais") */
+  .hero-actions :global(.btn) {
+    padding: 17px 30px;
+    font-size: 1.0625rem;
+  }
+  .hero-actions :global(.btn-secondary) {
+    padding: 17px 6px;
+  }
+  /* mobile: botões com altura de toque (≥44px). DEPOIS das regras base
+     acima, para vencer a cascata (mesma especificidade, ordem manda). */
+  @media (max-width: 700px) {
+    .hero-actions :global(.btn) {
+      padding: 16px 22px;
+      font-size: 1rem;
+    }
+    .hero-actions :global(.btn-secondary) {
+      padding: 16px 6px;
+    }
+  }
+  .hero-actions {
+    animation: hero-in 0.6s var(--ease) 0.9s both;
+  }
+
+  .hero-scroll {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    color: rgba(250, 248, 243, 0.7);
+    opacity: 0;
+    /* fade-in (só opacity) + bob (só transform): não competem entre si */
+    animation:
+      hero-fade 0.5s var(--ease) 1.15s both,
+      hero-bob 2s var(--ease) 1.65s infinite;
+  }
+  @keyframes hero-fade {
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes hero-bob {
+    0%,
+    100% {
+      transform: translateX(-50%) translateY(0);
+    }
+    50% {
+      transform: translateX(-50%) translateY(5px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wm-letter,
+    .wm-dot,
+    .hero-promise,
+    .hero-actions,
+    .hero-scroll,
+    .hero-bg {
+      opacity: 1;
+      animation: none;
+    }
+    .wm-letter,
+    .wm-dot {
+      transform: none;
+    }
+  }
+</style>

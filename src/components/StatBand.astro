@@ -1,0 +1,65 @@
+---
+import { strings } from '../i18n';
+import type { Lang } from '../i18n';
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const s = strings(lang);
+const stats = s.stats;
+---
+
+<section class="stat-band">
+  <div class="container stat-grid">
+    {
+      stats.map((s, i) => (
+        <div class="stat reveal" style={`--i:${i}`}>
+          <strong class={`countup ${s.lime ? 'stat-lime' : ''}`}>{s.value}</strong>
+          <span>{s.label}</span>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .stat-band {
+    background: var(--ink-900);
+    color: var(--paper);
+    padding-block: clamp(48px, 8vh, 92px);
+  }
+  .stat-grid {
+    display: grid;
+    gap: var(--space-8);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 760px) {
+    .stat-grid { grid-template-columns: repeat(3, 1fr); }
+    .stat:not(:last-child) { border-right: 1px solid rgba(250, 248, 243, 0.12); }
+  }
+  .stat strong {
+    display: block;
+    font-weight: 600;
+    font-size: clamp(2.5rem, 1.5rem + 4vw, 4rem);
+    line-height: 1;
+    letter-spacing: var(--tracking-tight);
+  }
+  .stat span {
+    display: block;
+    margin-top: var(--space-3);
+    font-size: 0.9375rem;
+    color: var(--ink-300);
+  }
+  /* o único lima da banda: sublinhado sob o show-up rate */
+  .stat-lime {
+    position: relative;
+    width: max-content;
+  }
+  .stat-lime::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -7px;
+    height: 3px;
+    background: var(--accent-500);
+  }
+</style>

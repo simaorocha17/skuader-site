@@ -1,0 +1,31 @@
+---
+import Phone3D from './Phone3D.astro';
+import Icon from './Icon.astro';
+import Button from './Button.astro';
+import { strings } from '../i18n';
+import type { Lang } from '../i18n';
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const s = strings(lang);
+---
+
+<section class="section section--tight band-fill">
+  <div class="container band-grid">
+    <div class="band-text">
+      <span class="eyebrow reveal">{s.thisweek.eyebrow}</span>
+      <h2 class="section-heading reveal">{s.thisweek.heading}</h2>
+      <p class="band-lead reveal">
+        {s.thisweek.lead}
+      </p>
+      <ul class="band-bullets reveal">
+        <li><Icon name="calendar" size={18} /> {s.thisweek.b1}</li>
+        <li><Icon name="users" size={18} /> {s.thisweek.b2}</li>
+        <li><Icon name="plus" size={18} /> {s.thisweek.b3}</li>
+      </ul>
+      <div class="band-actions reveal">
+        <Button href="#start" variant="secondary" label={s.thisweek.cta} />
+      </div>
+    </div>
+    <Phone3D class="reveal" screen="/screens/thisweek.png" />
+  </div>
+</section>

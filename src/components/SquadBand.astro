@@ -1,0 +1,21 @@
+---
+import Phone3D from './Phone3D.astro';
+import { strings } from '../i18n';
+import type { Lang } from '../i18n';
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const s = strings(lang);
+---
+
+<section class="section section--tight band-fill">
+  <div class="container band-grid phone-left">
+    <div class="band-text">
+      <span class="eyebrow reveal">{s.squad.eyebrow}</span>
+      <h2 class="section-heading reveal">{s.squad.heading}</h2>
+      <p class="band-lead reveal">
+        {s.squad.lead}
+      </p>
+    </div>
+    <Phone3D class="reveal" screen="/screens/squad-detail.png" dir={-1} label={s.squad.phoneLabel} />
+  </div>
+</section>

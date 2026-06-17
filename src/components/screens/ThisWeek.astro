@@ -1,0 +1,81 @@
+---
+import Icon from '../Icon.astro';
+---
+
+<div class="app-screen tw">
+  <div class="app-head">
+    <div>
+      <span class="app-eyebrow">This week</span>
+      <div class="app-title">Your week</div>
+    </div>
+    <Icon name="sliders" size={18} />
+  </div>
+
+  <div class="tw-seg">
+    <span class="tw-seg-item is-active">Week</span>
+    <span class="tw-seg-item">Month</span>
+    <span class="tw-seg-item">Map</span>
+  </div>
+
+  <span class="tw-day app-eyebrow">Tue 10</span>
+  <div class="app-card reveal" style="--i:1">
+    <div class="app-row tw-line">
+      <span class="tw-sport">Football 5v5</span>
+      <span class="app-pill app-pill--muted">19:00</span>
+    </div>
+    <div class="app-row tw-meta"><Icon name="map-pin" size={13} /><span>Parque Central · 1.2km</span></div>
+    <div class="app-row tw-line tw-foot">
+      <div class="app-stack">
+        <span class="app-avatar">JM</span><span class="app-avatar">AR</span><span class="app-avatar">PL</span><span class="app-avatar">+3</span>
+      </div>
+      <span class="app-pill app-pill--lime">Locked in</span>
+    </div>
+  </div>
+
+  <span class="tw-day app-eyebrow">Thu 12</span>
+  <div class="app-card reveal" style="--i:2">
+    <div class="app-row tw-line">
+      <span class="tw-sport">Padel</span>
+      <span class="app-pill app-pill--muted">18:30</span>
+    </div>
+    <div class="app-row tw-meta"><Icon name="map-pin" size={13} /><span>Clube Norte · 2.4km</span></div>
+    <div class="app-row tw-line tw-foot">
+      <div class="app-stack"><span class="app-avatar">SV</span><span class="app-avatar">DT</span></div>
+      <span class="app-pill app-pill--muted">Needs 2</span>
+    </div>
+  </div>
+
+  <button class="tw-fab" aria-hidden="true" tabindex="-1"><Icon name="plus" size={24} /></button>
+
+  <nav class="app-tabbar">
+    <span class="tab-active"><Icon name="calendar" size={19} /></span>
+    <Icon name="users" size={19} />
+    <Icon name="compass" size={19} />
+    <Icon name="user" size={19} />
+  </nav>
+</div>
+
+<style>
+  .tw-seg { display: flex; gap: 16px; }
+  .tw-seg-item { position: relative; padding-bottom: 6px; font-weight: 600; font-size: 13px; color: var(--muted); }
+  .tw-seg-item.is-active { color: var(--fg); }
+  .tw-seg-item.is-active::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; background: var(--accent-500); }
+  .tw-day { margin-top: 2px; }
+  .tw-line { justify-content: space-between; }
+  .tw-foot { margin-top: 9px; }
+  .tw-sport { font-weight: 600; font-size: 15px; }
+  .tw-meta { margin-top: 6px; color: var(--muted); font-size: 12px; }
+  .tw-fab {
+    position: absolute; right: 16px; bottom: 58px;
+    width: 52px; height: 52px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--accent-500); color: var(--ink-900); border: none;
+    box-shadow: 0 0 0 1px rgba(14, 19, 28, 0.08); z-index: 4;
+  }
+  .tw-fab :global(.icon) { stroke-width: 2.5; }
+  @media (hover: hover) {
+    .tw-fab { transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease); }
+    .tw-fab:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px var(--accent-500); }
+  }
+  @media (prefers-reduced-motion: reduce) { .tw-fab { transition: none; } }
+</style>

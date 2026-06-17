@@ -1,0 +1,76 @@
+---
+import Icon from '../Icon.astro';
+
+const cards = [
+  { tag: 'Padel', dist: '0.8km', game: 'Doubles · tonight 18:30', level: 3, state: 'join' },
+  { tag: 'Football', dist: '1.2km', game: '5-a-side · Tue 19:00', level: 2, state: 'full' },
+  { tag: 'Running', dist: '2.0km', game: 'Easy 8k · Wed 07:00', level: 4, state: 'join' },
+];
+---
+
+<div class="app-screen dv">
+  <div class="app-head">
+    <div>
+      <span class="app-eyebrow">Near you</span>
+      <div class="app-title">Find players</div>
+    </div>
+    <Icon name="sliders" size={18} />
+  </div>
+
+  <div class="dv-filters">
+    <span class="app-pill app-pill--lime">All sports <Icon name="chevron-down" size={12} /></span>
+    <span class="app-pill app-pill--outline">Within 3km <Icon name="chevron-down" size={12} /></span>
+    <span class="app-pill app-pill--outline">My level <Icon name="chevron-down" size={12} /></span>
+  </div>
+
+  {
+    cards.map((c, i) => (
+      <div class="app-card dv-card reveal" style={`--i:${i + 1}`}>
+        <div class="app-row dv-top">
+          <span class="app-pill app-pill--muted">{c.tag}</span>
+          <span class="dv-dist"><Icon name="map-pin" size={12} />{c.dist}</span>
+        </div>
+        <div class="dv-game">{c.game}</div>
+        <div class="app-row dv-bottom">
+          <span class="dv-level">
+            Level
+            <span class="dots">
+              {Array.from({ length: 5 }).map((_, d) => (
+                <span class={`dot ${d < c.level ? 'on' : ''}`} />
+              ))}
+            </span>
+          </span>
+          {c.state === 'full' ? (
+            <span class="app-pill app-pill--outline">Full</span>
+          ) : (
+            <span class="dv-join">Join</span>
+          )}
+        </div>
+      </div>
+    ))
+  }
+
+  <nav class="app-tabbar">
+    <Icon name="calendar" size={19} />
+    <Icon name="users" size={19} />
+    <span class="tab-active"><Icon name="compass" size={19} /></span>
+    <Icon name="user" size={19} />
+  </nav>
+</div>
+
+<style>
+  .dv-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+  .dv-card { display: grid; gap: 8px; }
+  .dv-top { justify-content: space-between; }
+  .dv-dist { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; color: var(--muted); }
+  .dv-game { font-weight: 600; font-size: 14px; }
+  .dv-bottom { justify-content: space-between; }
+  .dv-level { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; color: var(--muted); }
+  .dots { display: inline-flex; gap: 3px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
+  .dot.on { background: var(--fg); }
+  .dv-join {
+    font-weight: 600; font-size: 12px; padding: 5px 14px;
+    border: 1px solid var(--fg); border-radius: var(--r-full); color: var(--fg);
+  }
+</style>

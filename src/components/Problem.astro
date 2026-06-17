@@ -1,0 +1,63 @@
+---
+// "The old way": 40 mensagens, jogo nenhum — argumento à esquerda,
+// e à direita a consequência: o campo vazio à noite, bola abandonada.
+import SportShot from './SportShot.astro';
+import { strings } from '../i18n';
+import type { Lang } from '../i18n';
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const s = strings(lang);
+---
+
+<section class="section section--tight problem">
+  <div class="container problem-grid">
+    <div class="problem-text">
+      <span class="eyebrow reveal">{s.problem.eyebrow}</span>
+      <h2 class="section-heading reveal">{s.problem.headingL1}<br />{s.problem.headingL2}</h2>
+      <p class="problem-note reveal">{s.problem.note}</p>
+      <p class="reveal problem-fwd">{s.problem.fwd}</p>
+    </div>
+
+    <SportShot
+      class="reveal problem-shot"
+      src="/photos/empty-court.webp"
+      alt={s.problem.shotAlt}
+    />
+  </div>
+</section>
+
+<style>
+  .problem-grid {
+    display: grid;
+    gap: var(--space-12);
+    align-items: center;
+  }
+  @media (min-width: 860px) {
+    .problem-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 480px);
+      gap: var(--space-16);
+    }
+  }
+
+  .problem-note {
+    margin-top: var(--space-8);
+    font-weight: 600;
+    font-size: clamp(1.125rem, 1rem + 0.6vw, 1.375rem);
+    line-height: 1.45;
+    letter-spacing: var(--tracking-tight);
+    max-width: 34ch;
+  }
+  .problem-fwd {
+    margin-top: var(--space-6);
+    color: var(--muted);
+    font-weight: 600;
+    max-width: 34ch;
+  }
+
+  :global(.problem-shot) {
+    width: 100%;
+    max-width: 480px;
+    justify-self: center;
+    --shot-ratio: 4 / 5;
+  }
+</style>

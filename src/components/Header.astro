@@ -1,0 +1,216 @@
+---
+// Header de navegação fixo: transparente sobre o hero escuro, ganha fundo
+// sólido + blur ao fazer scroll. Marca à esquerda, links + seletor PT/EN + CTA.
+import Button from './Button.astro';
+import { strings, APP_AUTH_URL } from '../i18n';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const s = strings(lang);
+const links = [
+  { href: '#how-it-works', label: s.header.navHow },
+  { href: '#sports', label: s.header.navSports },
+  { href: '#proof', label: s.header.navReliability },
+];
+---
+
+<header class="site-header" data-header>
+  <div class="container header-inner">
+    <a href="#top" class="header-brand" aria-label={s.header.backToTop}>
+      skuader<span class="hb-dot" aria-hidden="true">.</span>
+    </a>
+
+    <nav class="header-nav" aria-label={s.header.navAria}>
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+
+    <div class="lang-switch" role="group" aria-label={s.header.langAria}>
+      <a href="/" data-setlang="pt" class={lang === 'pt' ? 'is-active' : ''} aria-current={lang === 'pt' ? 'true' : 'false'}>PT</a>
+      <span class="lang-sep" aria-hidden="true">/</span>
+      <a href="/en" data-setlang="en" class={lang === 'en' ? 'is-active' : ''} aria-current={lang === 'en' ? 'true' : 'false'}>EN</a>
+    </div>
+
+    <div class="header-cta">
+      <Button href={APP_AUTH_URL} variant="primary" label={s.header.cta} />
+    </div>
+  </div>
+</header>
+
+<script>
+  // fundo sólido só depois de sair do topo do hero
+  const h = document.querySelector('[data-header]');
+  if (h) {
+    const onScroll = () => h.classList.toggle('is-scrolled', window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+  // guarda a escolha de idioma antes de navegar (a deteção automática respeita-a)
+  document.querySelectorAll('[data-setlang]').forEach((a) => {
+    a.addEventListener('click', () => {
+      try {
+        localStorage.setItem('skuader-lang', a.getAttribute('data-setlang') || 'pt');
+      } catch (e) {}
+    });
+  });
+</script>
+
+<style>
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    color: var(--paper); /* sobre o hero escuro */
+    border-bottom: 1px solid transparent;
+    transition:
+      background 0.3s var(--ease),
+      border-color 0.3s var(--ease),
+      color 0.3s var(--ease);
+    animation: header-in 0.6s var(--ease) 0.2s both;
+  }
+  @keyframes header-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    height: 64px;
+  }
+
+  /* estado rolado: fundo do tema com blur + texto que se adapta */
+  .site-header.is-scrolled {
+    color: var(--fg);
+    background: var(--bg); /* fallback se não houver color-mix */
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    border-bottom-color: var(--border);
+  }
+
+  /* marca */
+  .header-brand {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    letter-spacing: var(--tracking-tight);
+    line-height: 1;
+    padding-top: 0.1em; /* Boldonse corta ascenders */
+    white-space: nowrap;
+  }
+  .hb-dot {
+    color: var(--accent-500);
+  }
+  /* o lima precisa de contorno sobre o papel claro quando o header é sólido */
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme='dark']) .site-header.is-scrolled .hb-dot {
+      -webkit-text-stroke: 1.3px var(--ink-900);
+    }
+  }
+  :root[data-theme='light'] .site-header.is-scrolled .hb-dot {
+    -webkit-text-stroke: 1.3px var(--ink-900);
+  }
+
+  /* links: empurrados para a direita */
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    margin-left: auto;
+  }
+  .header-nav a {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    opacity: 0.82;
+    transition: opacity 0.15s var(--ease);
+  }
+  .header-nav a:hover {
+    opacity: 1;
+  }
+
+  /* seletor de idioma — neutro (sem lima, que falha sobre papel) */
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .lang-switch a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px; /* alvo de toque (o texto fica do mesmo tamanho) */
+    padding: 0 6px;
+    opacity: 0.6;
+    transition: opacity 0.15s var(--ease);
+  }
+  .lang-switch a:hover {
+    opacity: 0.9;
+  }
+  .lang-switch a.is-active {
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .lang-sep {
+    opacity: 0.35;
+  }
+
+  /* botão compacto */
+  .header-cta :global(.btn) {
+    padding: 9px 18px;
+    font-size: 0.875rem;
+  }
+
+  /* mobile: só marca + seletor + CTA (sem links) */
+  @media (max-width: 720px) {
+    .header-nav {
+      display: none;
+    }
+    .header-inner {
+      height: 58px;
+      gap: var(--space-3);
+    }
+    .lang-switch {
+      margin-left: auto;
+    }
+    /* CTA com altura de toque (≥44px) no telemóvel */
+    .header-cta :global(.btn) {
+      padding: 14px 16px;
+    }
+  }
+  /* ecrãs estreitos (~360): aperta gutter/espaços p/ o CTA caber inteiro */
+  @media (max-width: 400px) {
+    .header-inner.container {
+      padding-inline: var(--space-4);
+    }
+    .header-brand {
+      font-size: 1.125rem;
+    }
+    .lang-switch a {
+      padding: 0 3px;
+    }
+    .header-cta :global(.btn) {
+      padding: 14px 13px;
+      font-size: 0.8125rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header {
+      animation: none;
+    }
+  }
+</style>
