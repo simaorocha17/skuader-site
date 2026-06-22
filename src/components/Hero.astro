@@ -147,8 +147,13 @@ const letters = ['s', 'k', 'u', 'a', 'd', 'e', 'r'];
     justify-content: space-between;
     gap: var(--space-8);
     margin-top: clamp(28px, 4vh, 52px);
-    /* dentro do container (não full-bleed): afastado das margens e
-       alinhado com os cabeçalhos das secções abaixo */
+    /* Full-bleed como a wordmark: escapa ao container de 1180px e usa o MESMO
+       gutter (5vw), para a frase + botões alinharem com o logótipo e com a
+       wordmark em qualquer largura de ecrã. Antes travavam a 1180px e
+       "centravam-se" nos monitores grandes. */
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    padding-inline: max(var(--space-6), 5vw);
   }
   .hero-promise {
     max-width: 52ch;
