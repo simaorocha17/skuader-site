@@ -31,16 +31,17 @@ const {
 </div>
 
 <script>
-  import * as THREE from 'three';
-  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-  import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-
+  // PERF: o Three.js é importado DINAMICAMENTE e só em desktop (pointer fino).
+  // Em telemóvel/tablet (pointer grosso) NÃO se carrega o Three.js (~590KB) nem
+  // o modelo .glb (~2.8MB) nem se cria WebGL — fica a print estática da app
+  // (o fallback). Torna o site MUITO mais leve e estável no telemóvel.
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const heavyOK = window.matchMedia('(pointer: fine)').matches;
 
-  function initPhone3D(el: HTMLElement, idx: number) {
+  function initPhone3D(THREE: any, GLTFLoader: any, RoomEnvironment: any, el: HTMLElement, idx: number) {
     const dir = Number(el.dataset.dir || 1);
     const phase = idx * 1.3; // cada telemóvel flutua com fase própria
-    let renderer: THREE.WebGLRenderer;
+    let renderer: any;
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     } catch (e) {
@@ -87,7 +88,7 @@ const {
     screenTex.offset.x = 1;
     screenTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
-    let phone: THREE.Object3D | null = null;
+    let phone: any = null;
     let loaded = false;
     const tinted = new Set<string>(); // materiais podem ser partilhados — tinge só 1×
 
@@ -246,7 +247,17 @@ const {
     io.observe(el);
   }
 
-  document.querySelectorAll<HTMLElement>('.phone3d').forEach((el, i) => initPhone3D(el, i));
+  // Arranque: SÓ em desktop (pointer fino) importa o Three.js (lazy chunk) e
+  // inicia os telemóveis 3D. Em telemóvel/tablet não faz nada → fica a print
+  // estática (fallback), sem descarregar Three.js nem o .glb.
+  (async () => {
+    const phones = document.querySelectorAll<HTMLElement>('.phone3d');
+    if (!phones.length || !heavyOK) return;
+    const THREE = await import('three');
+    const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
+    const { RoomEnvironment } = await import('three/examples/jsm/environments/RoomEnvironment.js');
+    phones.forEach((el, i) => initPhone3D(THREE, GLTFLoader, RoomEnvironment, el, i));
+  })();
 </script>
 
 <style>

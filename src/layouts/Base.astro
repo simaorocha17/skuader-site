@@ -24,6 +24,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta charset="utf-8" />
     <script is:inline>
       document.documentElement.classList.add('js');
+      /* mantém a posição de scroll ao recarregar (restauro nativo do browser) */
+      if ('scrollRestoration' in history) history.scrollRestoration = 'auto';
     </script>
     {/* Deteção de idioma: 1ª visita vai para a língua do browser; respeita a
         escolha guardada pelo seletor PT/EN. Corre cedo para evitar flash.
