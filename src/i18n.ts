@@ -4,7 +4,7 @@ export type Lang = 'pt' | 'en';
 
 // CTA "Criar uma equipa" leva à app do Miguel (página de auth: login + registo).
 // TODO: trocar pelo domínio final da app quando existir.
-export const APP_AUTH_URL = 'https://dist-zeta-ashy-22.vercel.app/sign-in';
+export const APP_AUTH_URL = 'https://app.skuader.com/sign-in';
 
 const DICT = {
   pt: {
